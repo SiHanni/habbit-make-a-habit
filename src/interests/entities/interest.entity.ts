@@ -9,7 +9,7 @@ export class Interest {
   @Column()
   category: string;
 
-  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.interests_id)
+  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.interestsId)
   usersInterests: UsersInterest[];
   //@ManyToMany(() => User, { cascade: true })
   //users: User[];

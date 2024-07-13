@@ -41,6 +41,6 @@ export class User {
   //  },
   //})
   //interests: Interest[];
-  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.user_id)
+  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId)
   usersInterests: UsersInterest[];
 }
