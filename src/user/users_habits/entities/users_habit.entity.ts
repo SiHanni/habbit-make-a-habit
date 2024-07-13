@@ -4,9 +4,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -36,6 +33,6 @@ export class UsersHabit {
   @Column({ name: 'duration_week' })
   durationWeek: number;
 
-  @Column({ name: 'is_finished' })
+  @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
 }
