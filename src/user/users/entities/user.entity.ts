@@ -43,4 +43,7 @@ export class User {
   //interests: Interest[];
   @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId)
   usersInterests: UsersInterest[];
+
+  @Column({ name: 'is_member' })
+  isMember: boolean;
 }
