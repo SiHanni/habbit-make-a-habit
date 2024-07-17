@@ -28,7 +28,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ name: 'profile_img' })
+  @Column({ name: 'profile_img', nullable: true })
   profileImg: string;
 
   //@ManyToMany(() => Interest, { cascade: true })
@@ -44,6 +44,6 @@ export class User {
   @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId)
   usersInterests: UsersInterest[];
 
-  @Column({ name: 'is_member' })
+  @Column({ name: 'is_member', default: false })
   isMember: boolean;
 }
