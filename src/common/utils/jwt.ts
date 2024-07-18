@@ -9,7 +9,7 @@ export const generateJwtToken = async (user: User): Promise<string> => {
   const secretKey = process.env.JWT_SECRET;
   console.log('SE', secretKey);
   if (!secretKey) {
-    throw new Error('JWT secret key not defined in environment');
+    throw new Error('JWT secret key not defined in environment!');
   }
   return jwt.sign(payload, secretKey, { expiresIn: '60h' });
 };
