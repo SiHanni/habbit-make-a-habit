@@ -8,12 +8,12 @@ export class UsersInterest {
   id: number;
 
   @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'user_id' })
   userId: User;
 
   @ManyToOne(() => Interest, (interests) => interests.interestsId, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'interests_id' })
   interestsId: Interest;
 }
