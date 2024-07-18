@@ -12,21 +12,27 @@ import { UsersModule } from './user/users/users.module';
 import { UsersHabitsModule } from './user/users_habits/users_habits.module';
 import { UsersInterestsModule } from './user/users_interests/users_interests.module';
 import { UsersPointsModule } from './user/users_points/users_points.module';
-import * as dotenv from 'dotenv';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-dotenv.config();
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '0000',
-      database: 'habbit',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // 개발 중에는 true로 설정하고, 배포 시에는 false로 설정
-      logging: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        //retryAttempts: configService.get('NODE_ENV') === 'prod' ? 3 : 1,
+        type: 'mysql',
+        host: configService.get('MYSQL_HOST'),
+        port: configService.get('MYSQL_PORT'),
+        username: configService.get('MYSQL_USERNAME'),
+        password: configService.get('MYSQL_PASSWORD'),
+        database: configService.get('MYSQL_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true, // 개발 중에는 true로 설정하고, 배포 시에는 false로 설정
+        logging: true,
+      }),
     }),
     DailyGoalProgressModule,
     InterestsModule,
