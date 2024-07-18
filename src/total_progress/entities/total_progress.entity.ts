@@ -6,7 +6,7 @@ export class TotalProgress {
   @OneToOne(() => UsersHabit, (usersHabit) => usersHabit.habitId)
   habitId: number;
 
-  @CreateDateColumn({ name: 'last_progress' })
+  @CreateDateColumn({ name: 'last_progress', precision: 0 })
   lastProgress: Date;
 
   @Column({ name: 'total_success_cnt' })
