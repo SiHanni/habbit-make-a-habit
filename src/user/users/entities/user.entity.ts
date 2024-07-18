@@ -4,11 +4,10 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  BeforeInsert,
+  //BeforeInsert,
 } from 'typeorm';
 import { UsersInterest } from 'src/user/users_interests/entities/users_interest.entity';
-import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+//import * as bcrypt from 'bcrypt';
 
 @Entity('users') //데이터베이스에서 매핑되는 테이블 명
 export class User {
@@ -63,13 +62,8 @@ export class User {
   @Column({ name: 'is_member', default: false })
   isMember: boolean;
 
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-
-  @BeforeInsert()
-  generateToken() {
-    this.token = uuidv4();
-  }
+  //@BeforeInsert()
+  //async hashPassword() {
+  //  this.password = await bcrypt.hash(this.password, 10);
+  //}
 }

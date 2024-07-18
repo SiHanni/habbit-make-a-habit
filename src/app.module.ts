@@ -12,6 +12,9 @@ import { UsersModule } from './user/users/users.module';
 import { UsersHabitsModule } from './user/users_habits/users_habits.module';
 import { UsersInterestsModule } from './user/users_interests/users_interests.module';
 import { UsersPointsModule } from './user/users_points/users_points.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forRoot({

@@ -4,7 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 //import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-
+import { generateJwtToken } from 'src/common/utils/jwt';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(
@@ -13,7 +14,7 @@ export class UsersService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto): Promise<User> {
-    const { email, username } = createUserDto;
+    const { email, username, password } = createUserDto;
 
     const checkEmail = await this.userRepository.findOne({
       where: { email, isMember: true },
@@ -28,8 +29,18 @@ export class UsersService {
     if (checkUsername) {
       throw new Error('This username is already used');
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const jwtToken = await generateJwtToken({
+      email: email,
+      username: username,
+    } as User);
 
-    const newUser = this.userRepository.create(createUserDto);
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+      isMember: true,
+      token: jwtToken,
+    });
     return this.userRepository.save(newUser);
   }
 
