@@ -47,3 +47,11 @@ export class CreateUserDto {
   @IsInt({ each: true }) // 배열의 각 요소에 대해 정수인지 검증하는 데코레이터
   interests: string[];
 }
+
+export class LogInDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+}

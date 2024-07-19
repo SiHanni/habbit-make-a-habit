@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, LogInDto } from './dto/create-user.dto';
 import { Repository, In } from 'typeorm';
 //import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -66,6 +66,29 @@ export class UsersService {
       await this.usersInterestRepository.save(usersInterests);
     }
     return savedUser;
+  }
+
+  async logIn(
+    loginDto: LogInDto,
+  ): Promise<{ userId: number; msg: string; username: string }> {
+    const { email, password } = loginDto;
+
+    const userCheck = await this.userRepository.findOne({
+      where: { email, isMember: true },
+    });
+    if (!userCheck) {
+      throw new UnauthorizedException('Invalid email');
+    }
+    const passwordCheck = await bcrypt.compare(password, userCheck.password);
+    if (!passwordCheck) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    return {
+      userId: userCheck.userId,
+      msg: 'Login successful',
+      username: userCheck.username,
+    };
   }
 
   findAll() {
