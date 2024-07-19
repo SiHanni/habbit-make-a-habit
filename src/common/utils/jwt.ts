@@ -7,7 +7,6 @@ export const generateJwtToken = async (user: User): Promise<string> => {
     username: user.username,
   };
   const secretKey = process.env.JWT_SECRET;
-  console.log('SE', secretKey);
   if (!secretKey) {
     throw new Error('JWT secret key not defined in environment!');
   }
