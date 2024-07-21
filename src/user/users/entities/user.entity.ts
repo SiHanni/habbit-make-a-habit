@@ -7,6 +7,8 @@ import {
   //BeforeInsert,
 } from 'typeorm';
 import { UsersInterest } from 'src/user/users_interests/entities/users_interest.entity';
+import { UsersHabit } from 'src/user/users_habits/entities/users_habit.entity';
+import { UsersPoint } from 'src/user/users_points/entities/users_point.entity';
 //import * as bcrypt from 'bcrypt';
 
 @Entity('users') //데이터베이스에서 매핑되는 테이블 명
@@ -56,14 +58,23 @@ export class User {
   //  },
   //})
   //interests: Interest[];
-  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId)
-  usersInterests: UsersInterest[];
 
   @Column({ name: 'is_member', default: false })
   isMember: boolean;
 
-  //@BeforeInsert()
-  //async hashPassword() {
-  //  this.password = await bcrypt.hash(this.password, 10);
-  //}
+  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId, {
+    cascade: true,
+    onDelete: 'CASCADE', //optional, manyToOne쪽에 적어두는게 더 좋다.
+  })
+  usersInterests: UsersInterest[];
+
+  @OneToMany(() => UsersHabit, (usersHabit) => usersHabit.habitId, {
+    cascade: true,
+  })
+  usersHabits: UsersHabit[];
+
+  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.usersPointsId, {
+    cascade: true,
+  })
+  usersPoints: UsersPoint[];
 }

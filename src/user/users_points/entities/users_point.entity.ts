@@ -13,7 +13,8 @@ import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_p
 export class UsersPoint {
   @PrimaryGeneratedColumn({ name: 'id' })
   usersPointsId: number;
-  @ManyToOne(() => User, (user) => user.userId)
+
+  @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   userId: User;
 
@@ -22,7 +23,7 @@ export class UsersPoint {
     (dailyGoalProgress) => dailyGoalProgress.dailyGoalProgressId,
   )
   @JoinColumn({ name: 'daily_goal_id' })
-  dailyGoalId: DailyGoalProgress;
+  dailyGoalprogressId: DailyGoalProgress;
 
   @ManyToOne(() => Point, (point) => point.pointId)
   @JoinColumn({ name: 'point_id' })

@@ -1,3 +1,4 @@
+import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
 import { User } from 'src/user/users/entities/user.entity';
 import {
   Entity,
@@ -6,6 +7,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('users_habits')
@@ -13,8 +15,7 @@ export class UsersHabit {
   @PrimaryGeneratedColumn({ name: 'id' })
   habitId: number;
 
-  // 제대로 정의된건지 테스트 필요.
-  @ManyToOne(() => User, (user) => user.userId)
+  @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -40,4 +41,14 @@ export class UsersHabit {
 
   @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
+
+  @OneToMany(
+    () => DailyGoalProgress,
+    (dailyGoalProgress) => dailyGoalProgress.dailyGoalProgressId,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+    },
+  )
+  dailyGoalProgress: DailyGoalProgress[];
 }
