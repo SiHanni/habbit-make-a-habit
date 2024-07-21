@@ -1,12 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, LogInDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository, In } from 'typeorm';
-//import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UsersInterest } from '../users_interests/entities/users_interest.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { generateJwtToken } from 'src/common/utils/jwt';
+import isImageUrl from 'image-url-validator';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -89,6 +95,50 @@ export class UsersService {
       msg: 'Login successful',
       username: userCheck.username,
     };
+  }
+
+  async getUser(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { userId: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async updateProfile(
+    userId: number,
+    editUserDto: UpdateUserDto,
+  ): Promise<{ user: User; msg: string }> {
+    const { username, profileImg } = editUserDto;
+
+    const user = await this.userRepository.findOne({
+      where: { userId: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+
+    if (username) {
+      const checkUsername = await this.userRepository.findOne({
+        where: { username },
+      });
+      if (checkUsername && checkUsername.userId !== user.userId) {
+        throw new BadRequestException('Already used username');
+      }
+      user.username = username;
+    }
+
+    if (profileImg) {
+      const isValidImageUrl = await isImageUrl(profileImg);
+      if (!isValidImageUrl) {
+        throw new BadRequestException('Inavalid image Url');
+      }
+      user.profileImg = profileImg;
+    }
+    const updatedUser = await this.userRepository.save(user);
+    return { user: updatedUser, msg: 'Success updated user profile' };
   }
 
   findAll() {
