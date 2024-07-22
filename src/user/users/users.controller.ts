@@ -9,6 +9,8 @@ import {
   Param,
   Put,
   Get,
+  Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, LogInDto } from './dto/create-user.dto';
@@ -37,12 +39,12 @@ export class UsersController {
   @Post('logIn')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async login(@Body() loginDto: LogInDto) {
-    return this.usersService.logIn(loginDto);
+    return await this.usersService.logIn(loginDto);
   }
 
   @Get(':id')
   async getUser(@Param('id') id: number): Promise<User> {
-    return this.usersService.getUser(+id);
+    return await this.usersService.getUser(+id);
   }
 
   @Put('update/:id')
@@ -50,10 +52,16 @@ export class UsersController {
     @Param('id') id: number,
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<{ user: User; msg: string }> {
-    return this.usersService.updateProfile(+id, updateProfileDto);
+    return await this.usersService.updateProfile(+id, updateProfileDto);
   }
   // +id는 Number(123) 과 같은 역할을 한다.
 
+  @Delete('delete/:id')
+  async deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ msg: string }> {
+    return await this.usersService.deleteUser(+id);
+  }
   //@Get()
   //findAll() {
   //  return this.usersService.findAll();

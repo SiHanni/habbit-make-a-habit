@@ -13,7 +13,7 @@ import { UsersPoint } from 'src/user/users_points/entities/users_point.entity';
 @Entity('daily_goal_progress')
 export class DailyGoalProgress {
   @PrimaryGeneratedColumn({ name: 'id' })
-  dailyGoalProgressId: number;
+  dailyGoalId: number;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -35,14 +35,14 @@ export class DailyGoalProgress {
   @Column({ name: 'on_progress' })
   onProgress: boolean;
 
-  @ManyToOne(() => UsersHabit, (usersHabit) => usersHabit.habitId, {
+  @ManyToOne(() => UsersHabit, (usersHabit) => usersHabit.dailyGoals, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'habit_id' })
-  habitId: UsersHabit;
+  usershabits: UsersHabit;
 
-  @OneToOne(() => UsersPoint, (usersPoint) => usersPoint.usersPointsId, {
+  @OneToOne(() => UsersPoint, (usersPoint) => usersPoint.dailyGoal, {
     cascade: true,
   })
-  usersPoint: UsersPoint;
+  usersPoints: UsersPoint[];
 }

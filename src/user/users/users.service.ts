@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, LogInDto } from './dto/create-user.dto';
@@ -61,12 +62,12 @@ export class UsersService {
         where: {
           category: In(interests),
         },
-        select: ['interestsId'],
+        select: ['interestId'],
       });
       const usersInterests = checkInterest.map((interest) =>
         this.usersInterestRepository.create({
-          userId: savedUser,
-          interestsId: interest,
+          user: savedUser,
+          interests: interest,
         }),
       );
       await this.usersInterestRepository.save(usersInterests);
@@ -141,6 +142,27 @@ export class UsersService {
     return { user: updatedUser, msg: 'Success updated user profile' };
   }
 
+  async deleteUser(userId: number): Promise<{ msg: string }> {
+    const user = await this.userRepository.findOne({
+      where: { userId },
+      relations: ['usersInterests', 'usersHabits', 'usersPoints'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const id = userId;
+    try {
+      // 사용자 삭제
+      await this.userRepository.remove(user);
+    } catch (error) {
+      throw new ConflictException('Error deleting user');
+      // 삭제 중 오류가 발생할 때 사용하는 예외처리
+    }
+
+    return {
+      msg: `Delete *User Id : ${id} *Username : ${user.username}`,
+    };
+  }
   findAll() {
     return `This action returns all users`;
   }

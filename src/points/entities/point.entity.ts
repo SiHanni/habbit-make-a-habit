@@ -11,9 +11,8 @@ export class Point {
   @Column()
   point: number;
 
-  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.usersPointsId, {
+  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.point, {
     cascade: true,
-    onDelete: 'CASCADE',
   })
-  usersPoint: UsersPoint[];
+  usersPoints: UsersPoint[];
 }

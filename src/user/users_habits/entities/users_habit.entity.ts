@@ -15,10 +15,6 @@ export class UsersHabit {
   @PrimaryGeneratedColumn({ name: 'id' })
   habitId: number;
 
-  @ManyToOne(() => User, (user) => user.userId, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
@@ -42,13 +38,16 @@ export class UsersHabit {
   @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
 
+  @ManyToOne(() => User, (user) => user.usersHabits, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
   @OneToMany(
     () => DailyGoalProgress,
-    (dailyGoalProgress) => dailyGoalProgress.dailyGoalProgressId,
+    (dailyGoalProgress) => dailyGoalProgress.usershabits,
     {
       cascade: true,
-      onDelete: 'CASCADE',
     },
   )
-  dailyGoalProgress: DailyGoalProgress[];
+  dailyGoals: DailyGoalProgress[];
 }

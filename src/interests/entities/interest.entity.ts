@@ -4,12 +4,12 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 @Entity('interests')
 export class Interest {
   @PrimaryGeneratedColumn({ name: 'id' })
-  interestsId: number;
+  interestId: number;
 
   @Column()
   category: string;
 
-  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.interestsId)
+  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.interests)
   usersInterests: UsersInterest[];
   //@ManyToMany(() => User, { cascade: true })
   //users: User[];

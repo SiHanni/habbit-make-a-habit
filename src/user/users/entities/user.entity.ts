@@ -4,12 +4,10 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  //BeforeInsert,
 } from 'typeorm';
 import { UsersInterest } from 'src/user/users_interests/entities/users_interest.entity';
 import { UsersHabit } from 'src/user/users_habits/entities/users_habit.entity';
 import { UsersPoint } from 'src/user/users_points/entities/users_point.entity';
-//import * as bcrypt from 'bcrypt';
 
 @Entity('users') //데이터베이스에서 매핑되는 테이블 명
 export class User {
@@ -48,32 +46,20 @@ export class User {
   @Column()
   token: string;
 
-  //@ManyToMany(() => Interest, { cascade: true })
-  //@JoinTable({
-  //  name: 'users_interests',
-  //  joinColumn: { name: 'user_id', referencedColumnName: 'userId' },
-  //  inverseJoinColumn: {
-  //    name: 'interests_id',
-  //    referencedColumnName: 'interestsId',
-  //  },
-  //})
-  //interests: Interest[];
-
   @Column({ name: 'is_member', default: false })
   isMember: boolean;
 
-  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.userId, {
+  @OneToMany(() => UsersInterest, (usersInterest) => usersInterest.user, {
     cascade: true,
-    onDelete: 'CASCADE', //optional, manyToOne쪽에 적어두는게 더 좋다.
   })
   usersInterests: UsersInterest[];
 
-  @OneToMany(() => UsersHabit, (usersHabit) => usersHabit.habitId, {
+  @OneToMany(() => UsersHabit, (usersHabit) => usersHabit.user, {
     cascade: true,
   })
   usersHabits: UsersHabit[];
 
-  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.usersPointsId, {
+  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.user, {
     cascade: true,
   })
   usersPoints: UsersPoint[];
