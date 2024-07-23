@@ -23,17 +23,35 @@ export class UsersHabit {
   })
   createdAt: Date;
 
+  @Column({
+    name: 'last_worked',
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+    precision: 0,
+  })
+  lastWorked: Date;
+
   @Column({ name: 'main_goal' })
   mainGoal: string;
 
   @Column({ name: 'daily_goal' })
   dailyGoal: string;
 
-  @Column({ name: 'daily_goal_time' })
+  @Column({ name: 'daily_goal_time' }) // 분 단위, 최소 30분 이상
   dailyGoalTime: number;
 
-  @Column({ name: 'duration_week' })
-  durationWeek: number;
+  @Column({ name: 'goal_days' })
+  goalDays: number;
+
+  @Column({ name: 'success_cnt' })
+  successCnt: number;
+
+  @Column({ name: 'total_worked_time' })
+  totalWorkedTime: number;
+
+  @Column({ name: 'continuous_cnt' })
+  continuousCnt: number;
 
   @Column({ name: 'is_finished', default: false })
   isFinished: boolean;

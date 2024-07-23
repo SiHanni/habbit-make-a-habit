@@ -7,7 +7,6 @@ import { InterestsModule } from './interests/interests.module';
 import { NotificationsModule } from './notification/notifications/notifications.module';
 import { NotificationsLogModule } from './notification/notifications_log/notifications_log.module';
 import { PointsModule } from './points/points.module';
-import { TotalProgressModule } from './total_progress/total_progress.module';
 import { UsersModule } from './user/users/users.module';
 import { UsersHabitsModule } from './user/users_habits/users_habits.module';
 import { UsersInterestsModule } from './user/users_interests/users_interests.module';
@@ -40,7 +39,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     NotificationsModule,
     NotificationsLogModule,
     PointsModule,
-    TotalProgressModule,
     UsersModule,
     UsersHabitsModule,
     UsersInterestsModule,
