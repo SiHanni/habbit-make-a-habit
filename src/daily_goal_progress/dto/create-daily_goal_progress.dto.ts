@@ -1,4 +1,4 @@
-import { IsNumber, IsBoolean, IsDate } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 export class DailyGoalProgressDto {
   dailyGoalProgressId: number;
@@ -13,19 +13,4 @@ export class DailyGoalProgressDto {
 export class CreateDailyGoalProgressDto {
   @IsNumber()
   habitId: number;
-
-  @IsDate()
-  createdAt: Date;
-
-  @IsNumber()
-  progressTime: number;
-
-  @IsBoolean()
-  isFinished: boolean;
-
-  @IsNumber()
-  confirmedTime: number;
-
-  @IsBoolean()
-  onProgress: boolean;
 }

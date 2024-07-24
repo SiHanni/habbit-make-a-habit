@@ -1,0 +1,19 @@
+import { IsNumber } from 'class-validator';
+
+export class UsersHabitDto {
+  habitId: number;
+  userId: number;
+  createdAt: Date;
+  mainGoal: string;
+  dailyGoal: string;
+  dailyGoalTime: number;
+  isFinished: boolean;
+}
+
+export class StartHabitDto {
+  @IsNumber()
+  userId: number;
+
+  @IsNumber()
+  habitId: number;
+}

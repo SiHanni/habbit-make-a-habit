@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { UsersHabitsService } from './users_habits.service';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
+import { StartHabitDto } from './dto/users_habit.dto';
+import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
 
 @Controller('users-habits')
 export class UsersHabitsController {
@@ -25,6 +27,22 @@ export class UsersHabitsController {
         goalDays: habit.usersHabit.goalDays,
         dailyGoal: habit.usersHabit.dailyGoal,
       };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('startHabit')
+  async startHabit(
+    @Body() startHabitDto: StartHabitDto,
+    dailyGoalProgressDto: DailyGoalProgressDto,
+  ) {
+    try {
+      const startHabit = await this.usersHabitsService.startHabit(
+        startHabitDto,
+        dailyGoalProgressDto,
+      );
+      return startHabit;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
