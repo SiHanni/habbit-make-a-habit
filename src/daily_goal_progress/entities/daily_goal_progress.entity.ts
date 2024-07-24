@@ -29,8 +29,13 @@ export class DailyGoalProgress {
   @Column({ name: 'is_finished' })
   isFinished: boolean;
 
-  @Column({ name: 'confirmed_time' })
-  confirmedTime: number;
+  @Column({
+    name: 'confirmed_at',
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+  })
+  confirmedTime: Date;
 
   @Column({ name: 'on_progress' })
   onProgress: boolean;

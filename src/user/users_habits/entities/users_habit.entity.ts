@@ -41,7 +41,7 @@ export class UsersHabit {
   @Column({ name: 'daily_goal_time' }) // 분 단위, 최소 30분 이상
   dailyGoalTime: number;
 
-  @Column({ name: 'goal_days' })
+  @Column({ name: 'goal_days' }) // 일 단위, 최소 7일 이상
   goalDays: number;
 
   @Column({ name: 'success_cnt' })
@@ -55,6 +55,9 @@ export class UsersHabit {
 
   @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
+
+  @Column({ name: 'is_expired', default: false })
+  isExpired: boolean;
 
   @ManyToOne(() => User, (user) => user.usersHabits, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })

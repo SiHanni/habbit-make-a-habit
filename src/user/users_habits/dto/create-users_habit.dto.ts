@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsBoolean } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 
 export class UsersHabitDto {
   habitId: number;
@@ -7,7 +7,6 @@ export class UsersHabitDto {
   mainGoal: string;
   dailyGoal: string;
   dailyGoalTime: number;
-  durationWeek: number;
   isFinished: boolean;
 }
 
@@ -18,15 +17,12 @@ export class CreateUsersHabitDto {
   @IsString()
   mainGoal: string;
 
+  @IsNumber()
+  goalDays: number;
+
   @IsString()
   dailyGoal: string;
 
   @IsNumber()
   dailyGoalTime: number;
-
-  @IsNumber()
-  durationWeek: number;
-
-  @IsBoolean()
-  isFinished: boolean;
 }
