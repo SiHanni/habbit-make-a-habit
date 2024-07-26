@@ -17,3 +17,14 @@ export class StartHabitDto {
   @IsNumber()
   habitId: number;
 }
+
+export class StopHabitDto {
+  @IsNumber()
+  userId: number;
+
+  @IsNumber()
+  habitId: number;
+
+  @IsNumber()
+  dailyGoalId: number;
+}

@@ -40,11 +40,19 @@ export class DailyGoalProgress {
   @Column({ name: 'on_progress' })
   onProgress: boolean;
 
+  @CreateDateColumn({
+    name: 'last_start_time',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    precision: 0,
+  })
+  lastStartTime: Date;
+
   @ManyToOne(() => UsersHabit, (usersHabit) => usersHabit.dailyGoals, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'habit_id' })
-  usershabits: UsersHabit;
+  usersHabits: UsersHabit;
 
   @OneToOne(() => UsersPoint, (usersPoint) => usersPoint.dailyGoal, {
     cascade: true,

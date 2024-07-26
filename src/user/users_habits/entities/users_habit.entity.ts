@@ -65,7 +65,7 @@ export class UsersHabit {
 
   @OneToMany(
     () => DailyGoalProgress,
-    (dailyGoalProgress) => dailyGoalProgress.usershabits,
+    (dailyGoalProgress) => dailyGoalProgress.usersHabits,
     {
       cascade: true,
     },
