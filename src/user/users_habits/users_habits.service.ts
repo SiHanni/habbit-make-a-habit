@@ -5,9 +5,12 @@ import { Repository } from 'typeorm';
 import { UsersHabit } from './entities/users_habit.entity';
 import { User } from '../users/entities/user.entity';
 import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
-import { StartHabitDto, StopHabitDto } from './dto/users_habit.dto';
+import {
+  StartHabitDto,
+  StopHabitDto,
+  UsersHabitDto,
+} from './dto/users_habit.dto';
 import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
-import { UsersHabitDto } from './dto/users_habit.dto';
 
 // 1. 습관 생성 api (습관 생성)
 // 2. 습관 시작 api (명세와 동일)
@@ -78,9 +81,10 @@ export class UsersHabitsService {
       .where('daily_goal_progress.habit_id = :habitId', { habitId })
       .andWhere('DATE(daily_goal_progress.created_at) = CURDATE()')
       .getOne();
-
+    console.log('today', checkDailyRoutine);
     // 3. daily row에서 is_finished와 on_progress가 false인지 체크(true면 진행 안댐)
     // 4. 시작하면 on_progress true로 바꿔놓으면 됌
+
     if (checkDailyRoutine) {
       if (checkDailyRoutine.isFinished || checkDailyRoutine.onProgress) {
         throw new Error(
@@ -92,6 +96,18 @@ export class UsersHabitsService {
       checkDailyRoutine.lastStartTime = now;
       await this.dailyGoalRepository.save(checkDailyRoutine);
     } else {
+      if (checkHabit.dailyGoals.length > 0) {
+        const previousGoalsToUpdate = checkHabit.dailyGoals.filter(
+          (goal) => goal.onProgress === true,
+        );
+        for (const goal of previousGoalsToUpdate) {
+          await this.dailyGoalRepository.update(
+            { dailyGoalId: goal.dailyGoalId },
+            { onProgress: false },
+          );
+        }
+      }
+
       const newDailyRoutine = this.dailyGoalRepository.create({
         ...dailyGoalProgressDto,
         onProgress: true,
@@ -102,7 +118,9 @@ export class UsersHabitsService {
 
     return { msg: 'Habit started successfully' };
   }
-
+  // 앱화면에서는 메인화면 블럭을 누르면 그 안에 dailyRoutine들 목록이 있을 것
+  // 그 목록들 하나하나 관리할 수 있도록.
+  // 그래서 어제꺼 완료 못한건 지금 아래 api와는 상관 없다.
   async stopHabit(
     stopHabitDto: StopHabitDto,
     usersHabitDto: UsersHabitDto,
@@ -130,47 +148,51 @@ export class UsersHabitsService {
       .leftJoinAndSelect('daily_goal_progress.usersHabits', 'users_habits')
       .leftJoinAndSelect('users_habits.user', 'users')
       .where('daily_goal_progress.dailyGoalId = :dailyGoalId', { dailyGoalId })
+      .andWhere('users_habits.habitId = :habitId', { habitId })
+      .andWhere('users_habits.user = :userId', { userId })
+      .andWhere('daily_goal_progress.onProgress= true')
       .getOne();
-    console.log('check', checkHabit);
-    const userIdFromQuery = checkHabit.usersHabits.user.userId;
-    const habitIdFromQuery = checkHabit.usersHabits.habitId;
-    const dailyGoalTime = checkHabit.usersHabits.dailyGoalTime;
-    const onProgress = checkHabit.onProgress;
-
-    const todayProgressTime = checkHabit.progressTime;
-    const totalProgressTime = checkHabit.usersHabits.totalWorkedTime;
-    console.log('A Today time', todayProgressTime);
+    if (!checkHabit) {
+      throw new Error('Invalid Request');
+    }
+    const progressTime = checkHabit.progressTime; // 현재 진행 시간
+    console.log('BEFORE PROGRESS TIME', progressTime);
     const now = new Date();
     const lastStartTime = new Date(checkHabit.lastStartTime);
     console.log('lastStartTiem', lastStartTime);
     const timeDiff = now.getTime() - lastStartTime.getTime();
     const elapseToMin = Math.floor(timeDiff / (1000 * 60));
-
-    const updatedTodayProgressTime = todayProgressTime + elapseToMin;
-
-    console.log('F Today time', updatedTodayProgressTime);
-
-    console.log('ELAPSE MIN :', elapseToMin);
-
-    if (userIdFromQuery !== userId || habitIdFromQuery !== habitId) {
-      throw new Error('Invalid Request');
-    }
-    if (!onProgress) {
-      throw new Error('Invalid Request: no started daily habit');
-    }
-    // 일단 저장된 진행 시간과, 호출한 시점에서 최근시작시간을 뺀 시간을 합친게, 목표 시간보다 크거나 같다면 정지와 동시에 완료 처리
-    if (updatedTodayProgressTime >= dailyGoalTime) {
-      // 일일 루틴 정지 프로세스 시작
-      // 아직 전체 습관 종료 날짜 아니면 daily만 종료하고 각 테이블 값 업데이트 해주기
-      // 포인트 지급하기.
+    const updatedProgressTime = progressTime + elapseToMin;
+    console.log('AFTER PROGRESSTIME', updatedProgressTime);
+    const dailyGoalTime = checkHabit.usersHabits.dailyGoalTime;
+    console.log('DAILY GOAL TIME', dailyGoalTime);
+    if (updatedProgressTime >= dailyGoalTime) {
+      // 완료 프로세스 시작
+      // 일단 daily 먼저
+      await this.dailyGoalRepository.update(dailyGoalId, {
+        onProgress: false,
+        isFinished: true,
+        progressTime: updatedProgressTime,
+        confirmedAt: new Date(),
+      });
+      // users_habit 부분 종료
+      await this.endHabit();
     } else {
-      // 아직 완료되지 않은 일일 루틴에 대한 처리.
-      // 시간 업데이트 등등.
+      await this.dailyGoalRepository.update(dailyGoalId, {
+        onProgress: false,
+        isFinished: true,
+        progressTime: updatedProgressTime,
+        confirmedAt: updatedProgressTime,
+      });
+      return {
+        msg: `userId ${userId}'s habitId ${habitId} update time : ${updatedProgressTime}`,
+      };
     }
-    // 완료 처리에도 만약 오늘 날짜가 해당 습관의 마지막 관리일이라면 isFinished=true
-    // 그게 아니라면 진행 시간에 더하기만 해주고 리턴하면서 api 종료
 
     console.log('chch', checkHabit);
     return { msg: 'test' };
   }
+  // mainGoal의 날짜가 종료되었는지 검증하여 습관 전체 블록을 종료시켜버리는 api임.
+  //
+  async endHabit() {}
 }

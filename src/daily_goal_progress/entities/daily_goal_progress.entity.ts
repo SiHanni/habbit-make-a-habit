@@ -23,10 +23,10 @@ export class DailyGoalProgress {
   })
   createdAt: Date;
 
-  @Column({ name: 'progress_time' })
+  @Column({ name: 'progress_time', default: 0 })
   progressTime: number;
 
-  @Column({ name: 'is_finished' })
+  @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
 
   @Column({
@@ -35,7 +35,7 @@ export class DailyGoalProgress {
     nullable: true,
     default: null,
   })
-  confirmedTime: Date;
+  confirmedAt: Date;
 
   @Column({ name: 'on_progress' })
   onProgress: boolean;
