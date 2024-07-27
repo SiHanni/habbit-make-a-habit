@@ -59,20 +59,18 @@ export class UsersHabitsService {
     startHabitDto: StartHabitDto,
     dailyGoalProgressDto: DailyGoalProgressDto,
   ): Promise<{ msg: string }> {
-    // 1.해당 유저의 habitId에 대한 데이터 검증
     const { userId, habitId } = startHabitDto;
 
-    console.log('u', userId, habitId);
     const checkHabit = await this.usersHabitsRepository.findOne({
       where: { habitId },
       relations: ['user', 'dailyGoals'],
     });
-    console.log('checlk', checkHabit);
+
     if (!checkHabit) {
-      throw new Error('Invalid Request : Not Existed habit');
+      throw new NotFoundException('Invalid Request : Not Existed habit');
     }
     if (checkHabit.user.userId !== userId) {
-      throw new Error('Invalid Request : User dosent match');
+      throw new NotFoundException('Invalid Request : User dosent match');
     }
 
     // 2. 해당 habitId로 daily row가 있는지 체크 (없다면 생성)
@@ -81,9 +79,6 @@ export class UsersHabitsService {
       .where('daily_goal_progress.habit_id = :habitId', { habitId })
       .andWhere('DATE(daily_goal_progress.created_at) = CURDATE()')
       .getOne();
-    console.log('today', checkDailyRoutine);
-    // 3. daily row에서 is_finished와 on_progress가 false인지 체크(true면 진행 안댐)
-    // 4. 시작하면 on_progress true로 바꿔놓으면 됌
 
     if (checkDailyRoutine) {
       if (checkDailyRoutine.isFinished || checkDailyRoutine.onProgress) {
@@ -137,40 +132,62 @@ export class UsersHabitsService {
       .andWhere('users_habits.habitId = :habitId', { habitId })
       .andWhere('users_habits.user = :userId', { userId })
       .andWhere('daily_goal_progress.onProgress= true')
+      .andWhere('DATE(daily_goal_progress.created_at) = CURDATE()')
       .getOne();
+
+    console.log('check habit', checkHabit);
     if (!checkHabit) {
-      throw new Error('Invalid Request');
+      throw new Error('Invalid Request: No routine on progress in today');
     }
-    const progressTime = checkHabit.progressTime; // 현재 진행 시간
-    console.log('BEFORE PROGRESS TIME', progressTime);
+    const progressTime = checkHabit.progressTime;
     const now = new Date();
-    const lastStartTime = new Date(checkHabit.lastStartTime);
-    console.log('lastStartTiem', lastStartTime);
+    const lastStartTime = checkHabit.lastStartTime;
     const timeDiff = now.getTime() - lastStartTime.getTime();
     const elapseToMin = Math.floor(timeDiff / (1000 * 60));
     const updatedProgressTime = progressTime + elapseToMin;
-    console.log('AFTER PROGRESSTIME', updatedProgressTime);
+
     const dailyGoalTime = checkHabit.usersHabits.dailyGoalTime;
-    console.log('DAILY GOAL TIME', dailyGoalTime);
+
     if (updatedProgressTime >= dailyGoalTime) {
-      // 완료 프로세스 시작
-      // 일단 daily 먼저
       await this.dailyGoalRepository.update(dailyGoalId, {
         onProgress: false,
         isFinished: true,
         progressTime: updatedProgressTime,
         confirmedAt: new Date(),
       });
-      // TODO: 어제 날짜에 is_finished인 daily 루틴있는지 찾아서 있다면 continous도 올려주기
       // TODO: 성공한 후 데일리 성공 포인트를 지급해야한다.
-      await this.usersHabitsRepository.update(habitId, {
-        lastWorked: new Date(),
-        successCnt: checkHabit.usersHabits.successCnt + 1,
-        totalWorkedTime:
-          checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
-      });
-      // users_habit 부분 종료
-      //await this.endHabit(stopHabitDto, checkHabit);
+      const checkYesterday = await this.dailyGoalRepository
+        .createQueryBuilder('daily_goal_progress')
+        .where('daily_goal_progress.habit_id = :habitId', {
+          habitId,
+        })
+        .andWhere(
+          'DATE(daily_goal_progress.created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)',
+        )
+        .andWhere('daily_goal_progress.is_finished = :isFinished', {
+          isFinished: true,
+        })
+        .getOne();
+      if (checkYesterday) {
+        await this.usersHabitsRepository.update(habitId, {
+          lastWorked: new Date(),
+          successCnt: checkHabit.usersHabits.successCnt + 1,
+          continuousCnt: checkHabit.usersHabits.continuousCnt + 1,
+          totalWorkedTime:
+            checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
+        });
+      } else {
+        await this.usersHabitsRepository.update(habitId, {
+          lastWorked: new Date(),
+          successCnt: checkHabit.usersHabits.successCnt + 1,
+          continuousCnt: 0,
+          totalWorkedTime:
+            checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
+        });
+      }
+      return {
+        msg: `Routine Success :: userId ${userId}'s progressId ${dailyGoalId} update time : ${updatedProgressTime}`,
+      };
     } else {
       await this.dailyGoalRepository.update(dailyGoalId, {
         onProgress: false,
@@ -183,12 +200,9 @@ export class UsersHabitsService {
           checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
       });
       return {
-        msg: `userId ${userId}'s habitId ${habitId} update time : ${updatedProgressTime}`,
+        msg: `Routine Pause :: userId ${userId}'s progressId ${dailyGoalId} update time : ${updatedProgressTime}`,
       };
     }
-
-    console.log('chch', checkHabit);
-    return { msg: 'test' };
   }
   // mainGoal의 날짜가 종료되었는지 검증하여 습관 전체 블록을 종료시켜버리는 api임.
   //

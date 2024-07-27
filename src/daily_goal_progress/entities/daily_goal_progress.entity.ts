@@ -37,7 +37,7 @@ export class DailyGoalProgress {
   })
   confirmedAt: Date;
 
-  @Column({ name: 'on_progress' })
+  @Column({ name: 'on_progress', default: false })
   onProgress: boolean;
 
   @CreateDateColumn({
