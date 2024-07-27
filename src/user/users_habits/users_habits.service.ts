@@ -6,9 +6,9 @@ import { UsersHabit } from './entities/users_habit.entity';
 import { User } from '../users/entities/user.entity';
 import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
 import {
+  EndHabitDto,
   StartHabitDto,
   StopHabitDto,
-  UsersHabitDto,
 } from './dto/users_habit.dto';
 import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
 
@@ -121,21 +121,7 @@ export class UsersHabitsService {
   // 앱화면에서는 메인화면 블럭을 누르면 그 안에 dailyRoutine들 목록이 있을 것
   // 그 목록들 하나하나 관리할 수 있도록.
   // 그래서 어제꺼 완료 못한건 지금 아래 api와는 상관 없다.
-  async stopHabit(
-    stopHabitDto: StopHabitDto,
-    usersHabitDto: UsersHabitDto,
-    dailyGoalProgressDto: DailyGoalProgressDto,
-  ): Promise<{ msg: string }> {
-    // 진행 중인데 완료 조건 충족되지않았다면 일시 정지
-    // 진행 중인데 완료 조건 충족되었다면 완료 처리
-    // 완료 처리란? -> dailyProgress(is_finished = true, confirmed_at, on_progress = false) 로 되어야함.
-    // 완료 처리란? -> users_habit(is_finished= true)
-    // 포인트도 지급해야함.
-    // 또한, users_habit(last_worked 업데이트, 이 때 해당 habit goal_days가 끝나는 날인지 체크 필요)
-    // 또한, users_habit(success_cnt +1)
-    // 또한, users_habit(total_worked_time에 분단위로 +)
-    // 또한, users_habit(last_worked가 어제라면, continuous_cnt +1)
-
+  async stopHabit(stopHabitDto: StopHabitDto): Promise<{ msg: string }> {
     // 근데 유저가 시작만 해두고 종료 api를 호출하지 않으면 어떻게 처리할지 고민해봐야함.
     // 데일리 루틴 완료후 30분이 지났는데도 종료하지 않았다면 푸시 알림을 보내도록 한다.
 
@@ -175,14 +161,26 @@ export class UsersHabitsService {
         progressTime: updatedProgressTime,
         confirmedAt: new Date(),
       });
+      // TODO: 어제 날짜에 is_finished인 daily 루틴있는지 찾아서 있다면 continous도 올려주기
+      // TODO: 성공한 후 데일리 성공 포인트를 지급해야한다.
+      await this.usersHabitsRepository.update(habitId, {
+        lastWorked: new Date(),
+        successCnt: checkHabit.usersHabits.successCnt + 1,
+        totalWorkedTime:
+          checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
+      });
       // users_habit 부분 종료
-      await this.endHabit();
+      //await this.endHabit(stopHabitDto, checkHabit);
     } else {
       await this.dailyGoalRepository.update(dailyGoalId, {
         onProgress: false,
         isFinished: true,
         progressTime: updatedProgressTime,
-        confirmedAt: updatedProgressTime,
+      });
+      await this.usersHabitsRepository.update(habitId, {
+        lastWorked: new Date(),
+        totalWorkedTime:
+          checkHabit.usersHabits.totalWorkedTime + updatedProgressTime,
       });
       return {
         msg: `userId ${userId}'s habitId ${habitId} update time : ${updatedProgressTime}`,
@@ -194,5 +192,21 @@ export class UsersHabitsService {
   }
   // mainGoal의 날짜가 종료되었는지 검증하여 습관 전체 블록을 종료시켜버리는 api임.
   //
-  async endHabit() {}
+  async endHabit(endHabitDto: EndHabitDto) {
+    // 메인 goal 종료하는 api이다.
+    // stopHabit에서도 호출이 된다.
+    // 일반적으로도 호출이 되어야 한다.
+    // 1. 일반적인 기능
+    // 2. users_habits 테이블의 컬럼 값 업데이트
+    //  a. is_finished
+    //  b. last_worked(이거 목적이 뭐더라)
+    //  c. success_cnt
+    //  d. total_worked_time
+    //  e. continuous_cnt
+    //  f. is_expired
+    // ** daily최초 시작날, maingoal 날짜 더해서 종료일을 변수에 담고 이게 아직 안됐으면 바로 invalid Request임 이게 시작임
+    // 암튼 stopHabit에서 users_habits last_work, success_cnt, totalWorkedTime, continous는 update 해준 상태임.
+    // 총 성공 수행일이 목표일의 2/3이상이라면 is_finished 처리, 그렇지 않다면 is_expired 처리
+    // is_finished라면 추가보상.
+  }
 }

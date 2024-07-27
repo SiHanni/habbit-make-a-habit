@@ -28,3 +28,11 @@ export class StopHabitDto {
   @IsNumber()
   dailyGoalId: number;
 }
+
+export class EndHabitDto {
+  @IsNumber()
+  userId: number;
+
+  @IsNumber()
+  habitId: number;
+}

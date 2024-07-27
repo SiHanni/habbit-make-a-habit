@@ -7,9 +7,12 @@ import {
 } from '@nestjs/common';
 import { UsersHabitsService } from './users_habits.service';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
-import { StartHabitDto, StopHabitDto } from './dto/users_habit.dto';
+import {
+  StartHabitDto,
+  StopHabitDto,
+  EndHabitDto,
+} from './dto/users_habit.dto';
 import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
-import { UsersHabitDto } from './dto/users_habit.dto';
 
 @Controller('users-habits')
 export class UsersHabitsController {
@@ -50,18 +53,20 @@ export class UsersHabitsController {
   }
 
   @Post('stopHabit')
-  async stopHabit(
-    @Body() stopHabitDto: StopHabitDto,
-    usersHabitDto: UsersHabitDto,
-    dailyGoalProgressDto: DailyGoalProgressDto,
-  ) {
+  async stopHabit(@Body() stopHabitDto: StopHabitDto) {
     try {
-      const stopHabit = await this.usersHabitsService.stopHabit(
-        stopHabitDto,
-        usersHabitDto,
-        dailyGoalProgressDto,
-      );
+      const stopHabit = await this.usersHabitsService.stopHabit(stopHabitDto);
       return stopHabit;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('endHabit')
+  async endHabit(@Body() endHabitDto: EndHabitDto) {
+    try {
+      const endHabit = await this.usersHabitsService.endHabit(endHabitDto);
+      return endHabit;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
