@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
 import { Repository } from 'typeorm';
-import { UsersHabit } from './entities/users_habit.entity';
 import { User } from '../users/entities/user.entity';
+import { UsersHabit } from './entities/users_habit.entity';
 import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
+import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
 import {
+  HabitDto,
   EndHabitDto,
   StartHabitDto,
   StopHabitDto,
 } from './dto/users_habit.dto';
 import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
-
+import { DailyGoalDto } from 'src/daily_goal_progress/dto/daily_goal_progress.dto';
 // 1. 습관 생성 api (습관 생성)
 // 2. 습관 시작 api (명세와 동일)
 // 3. 습관 종료 api (명세와 동일)
@@ -19,10 +20,10 @@ import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_g
 @Injectable()
 export class UsersHabitsService {
   constructor(
-    @InjectRepository(UsersHabit)
-    private readonly usersHabitsRepository: Repository<UsersHabit>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(UsersHabit)
+    private readonly usersHabitsRepository: Repository<UsersHabit>,
     @InjectRepository(DailyGoalProgress)
     private readonly dailyGoalRepository: Repository<DailyGoalProgress>,
   ) {}
@@ -56,10 +57,10 @@ export class UsersHabitsService {
   }
 
   async startHabit(
-    startHabitDto: StartHabitDto,
-    dailyGoalProgressDto: DailyGoalProgressDto,
+    habitDto: HabitDto,
+    dailyGoalDto: DailyGoalDto,
   ): Promise<{ msg: string }> {
-    const { userId, habitId } = startHabitDto;
+    const { userId, habitId } = habitDto;
 
     const checkHabit = await this.usersHabitsRepository.findOne({
       where: { habitId },
@@ -104,7 +105,7 @@ export class UsersHabitsService {
       }
 
       const newDailyRoutine = this.dailyGoalRepository.create({
-        ...dailyGoalProgressDto,
+        ...dailyGoalDto,
         onProgress: true,
         usersHabits: checkHabit,
       });
@@ -116,13 +117,13 @@ export class UsersHabitsService {
   // 앱화면에서는 메인화면 블럭을 누르면 그 안에 dailyRoutine들 목록이 있을 것
   // 그 목록들 하나하나 관리할 수 있도록.
   // 그래서 어제꺼 완료 못한건 지금 아래 api와는 상관 없다.
-  async stopHabit(stopHabitDto: StopHabitDto): Promise<{ msg: string }> {
+  async stopHabit(dailyProgressDto: DailyGoalDto): Promise<{ msg: string }> {
     // 근데 유저가 시작만 해두고 종료 api를 호출하지 않으면 어떻게 처리할지 고민해봐야함.
     // 데일리 루틴 완료후 30분이 지났는데도 종료하지 않았다면 푸시 알림을 보내도록 한다.
 
     // business logic
     // 1. 유저와 습관 검증
-    const { userId, habitId, dailyGoalId } = stopHabitDto;
+    const { userId, habitId, dailyGoalId } = dailyProgressDto;
 
     const checkHabit = await this.dailyGoalRepository
       .createQueryBuilder('daily_goal_progress')
@@ -135,7 +136,6 @@ export class UsersHabitsService {
       .andWhere('DATE(daily_goal_progress.created_at) = CURDATE()')
       .getOne();
 
-    console.log('check habit', checkHabit);
     if (!checkHabit) {
       throw new Error('Invalid Request: No routine on progress in today');
     }
@@ -206,7 +206,9 @@ export class UsersHabitsService {
   }
   // mainGoal의 날짜가 종료되었는지 검증하여 습관 전체 블록을 종료시켜버리는 api임.
   //
-  async endHabit(endHabitDto: EndHabitDto) {
+  async endHabit(habitDto: HabitDto) {
+    const { userId, habitId } = habitDto;
+    console.log(userId, habitId);
     // 메인 goal 종료하는 api이다.
     // stopHabit에서도 호출이 된다.
     // 일반적으로도 호출이 되어야 한다.
@@ -223,4 +225,5 @@ export class UsersHabitsService {
     // 총 성공 수행일이 목표일의 2/3이상이라면 is_finished 처리, 그렇지 않다면 is_expired 처리
     // is_finished라면 추가보상.
   }
+  async getHabit() {}
 }

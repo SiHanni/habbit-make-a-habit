@@ -7,13 +7,9 @@ import {
 } from '@nestjs/common';
 import { UsersHabitsService } from './users_habits.service';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
-import {
-  StartHabitDto,
-  StopHabitDto,
-  EndHabitDto,
-} from './dto/users_habit.dto';
+import { HabitDto } from './dto/users_habit.dto';
 import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
-
+import { DailyGoalDto } from 'src/daily_goal_progress/dto/daily_goal_progress.dto';
 @Controller('users-habits')
 export class UsersHabitsController {
   constructor(private readonly usersHabitsService: UsersHabitsService) {}
@@ -37,14 +33,11 @@ export class UsersHabitsController {
   }
 
   @Post('startHabit')
-  async startHabit(
-    @Body() startHabitDto: StartHabitDto,
-    dailyGoalProgressDto: DailyGoalProgressDto,
-  ) {
+  async startHabit(@Body() habitDto: HabitDto, dailyGoalDto: DailyGoalDto) {
     try {
       const startHabit = await this.usersHabitsService.startHabit(
-        startHabitDto,
-        dailyGoalProgressDto,
+        habitDto,
+        dailyGoalDto,
       );
       return startHabit;
     } catch (error) {
@@ -53,9 +46,9 @@ export class UsersHabitsController {
   }
 
   @Post('stopHabit')
-  async stopHabit(@Body() stopHabitDto: StopHabitDto) {
+  async stopHabit(@Body() dailyGoalDto: DailyGoalDto) {
     try {
-      const stopHabit = await this.usersHabitsService.stopHabit(stopHabitDto);
+      const stopHabit = await this.usersHabitsService.stopHabit(dailyGoalDto);
       return stopHabit;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -63,9 +56,9 @@ export class UsersHabitsController {
   }
 
   @Post('endHabit')
-  async endHabit(@Body() endHabitDto: EndHabitDto) {
+  async endHabit(@Body() habitDto: HabitDto) {
     try {
-      const endHabit = await this.usersHabitsService.endHabit(endHabitDto);
+      const endHabit = await this.usersHabitsService.endHabit(habitDto);
       return endHabit;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

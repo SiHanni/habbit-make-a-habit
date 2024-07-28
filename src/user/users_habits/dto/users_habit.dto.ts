@@ -10,29 +10,37 @@ export class UsersHabitDto {
   isFinished: boolean;
 }
 
-export class StartHabitDto {
+export class HabitDto {
   @IsNumber()
   userId: number;
 
   @IsNumber()
   habitId: number;
 }
+// TODO: deprecated;
+// export class StartHabitDto {
+//   @IsNumber()
+//   userId: number;
 
-export class StopHabitDto {
-  @IsNumber()
-  userId: number;
+//   @IsNumber()
+//   habitId: number;
+// }
 
-  @IsNumber()
-  habitId: number;
+// export class StopHabitDto {
+//   @IsNumber()
+//   userId: number;
 
-  @IsNumber()
-  dailyGoalId: number;
-}
+//   @IsNumber()
+//   habitId: number;
 
-export class EndHabitDto {
-  @IsNumber()
-  userId: number;
+//   @IsNumber()
+//   dailyGoalId: number;
+// }
 
-  @IsNumber()
-  habitId: number;
-}
+// export class EndHabitDto {
+//   @IsNumber()
+//   userId: number;
+
+//   @IsNumber()
+//   habitId: number;
+// }
