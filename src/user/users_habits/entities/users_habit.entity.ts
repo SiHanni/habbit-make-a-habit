@@ -1,5 +1,6 @@
 import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
 import { User } from 'src/user/users/entities/user.entity';
+import { UsersPoint } from 'src/user/users_points/entities/users_point.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -74,4 +75,9 @@ export class UsersHabit {
     },
   )
   dailyGoals: DailyGoalProgress[];
+
+  @OneToMany(() => UsersPoint, (usersPoint) => usersPoint.usersHabits, {
+    cascade: true,
+  })
+  usersPoints: UsersPoint[];
 }

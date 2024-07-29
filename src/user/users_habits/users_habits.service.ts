@@ -7,6 +7,7 @@ import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_p
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
 import { HabitDto } from './dto/users_habit.dto';
 import { DailyGoalDto } from 'src/daily_goal_progress/dto/daily_goal_progress.dto';
+import { UsersPoint } from '../users_points/entities/users_point.entity';
 // 1. 습관 생성 api (습관 생성)
 // 2. 습관 시작 api (명세와 동일)
 // 3. 습관 종료 api (명세와 동일)
@@ -18,6 +19,8 @@ export class UsersHabitsService {
     private readonly usersRepository: Repository<User>,
     @InjectRepository(UsersHabit)
     private readonly usersHabitsRepository: Repository<UsersHabit>,
+    @InjectRepository(UsersPoint)
+    private readonly usersPointRepository: Repository<UsersPoint>,
     @InjectRepository(DailyGoalProgress)
     private readonly dailyGoalRepository: Repository<DailyGoalProgress>,
   ) {}
@@ -150,6 +153,18 @@ export class UsersHabitsService {
         confirmedAt: new Date(),
       });
       // TODO: 성공한 후 데일리 성공 포인트를 지급해야한다.
+      try {
+        const dailyPoint = await this.usersPointRepository.create({
+          user: { userId: userId },
+          point: { pointId: 1 },
+          usersHabits: { habitId: habitId },
+          dailyGoal: { dailyGoalId: dailyGoalId },
+        });
+        await this.usersPointRepository.save(dailyPoint);
+      } catch (error) {
+        console.log('error occured in point process', error);
+      }
+
       const checkYesterday = await this.dailyGoalRepository
         .createQueryBuilder('daily_goal_progress')
         .where('daily_goal_progress.habit_id = :habitId', {
@@ -224,6 +239,16 @@ export class UsersHabitsService {
           isComplete: true,
         });
         // 성공시 추가 포인트 지급
+        try {
+          const dailyPoint = await this.usersPointRepository.create({
+            user: { userId: userId },
+            point: { pointId: 2 },
+            usersHabits: { habitId: habitId },
+          });
+          await this.usersPointRepository.save(dailyPoint);
+        } catch (error) {
+          console.log('error occured in point process', error);
+        }
       } else {
         await this.usersHabitsRepository.update(habitId, {
           isFinished: true,
