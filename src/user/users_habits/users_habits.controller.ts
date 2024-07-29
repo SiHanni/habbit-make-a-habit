@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpException,
   HttpStatus,
@@ -8,7 +9,6 @@ import {
 import { UsersHabitsService } from './users_habits.service';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
 import { HabitDto } from './dto/users_habit.dto';
-import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
 import { DailyGoalDto } from 'src/daily_goal_progress/dto/daily_goal_progress.dto';
 @Controller('users-habits')
 export class UsersHabitsController {
@@ -60,6 +60,26 @@ export class UsersHabitsController {
     try {
       const endHabit = await this.usersHabitsService.endHabit(habitDto);
       return endHabit;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('getAllHabitInfo')
+  async getAllHabitInfo(@Body() habitDto: HabitDto) {
+    try {
+      const getAllHabitInfo =
+        await this.usersHabitsService.getAllHabitInfo(habitDto);
+      return getAllHabitInfo;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  @Get('getHabitInfo')
+  async getHabitInfo(@Body() habitDto: HabitDto) {
+    try {
+      const getHabitInfo = await this.usersHabitsService.getHabitInfo(habitDto);
+      return getHabitInfo;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

@@ -56,8 +56,11 @@ export class UsersHabit {
   @Column({ name: 'is_finished', default: false })
   isFinished: boolean;
 
-  @Column({ name: 'is_expired', default: false })
-  isExpired: boolean;
+  @Column({ name: 'is_complete', default: false })
+  isComplete: boolean;
+
+  @Column({ name: 'is_failed', default: false })
+  isFailed: boolean;
 
   @ManyToOne(() => User, (user) => user.usersHabits, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })

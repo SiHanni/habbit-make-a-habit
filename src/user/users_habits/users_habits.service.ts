@@ -5,13 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { UsersHabit } from './entities/users_habit.entity';
 import { DailyGoalProgress } from 'src/daily_goal_progress/entities/daily_goal_progress.entity';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
-import {
-  HabitDto,
-  EndHabitDto,
-  StartHabitDto,
-  StopHabitDto,
-} from './dto/users_habit.dto';
-import { DailyGoalProgressDto } from 'src/daily_goal_progress/dto/create-daily_goal_progress.dto';
+import { HabitDto } from './dto/users_habit.dto';
 import { DailyGoalDto } from 'src/daily_goal_progress/dto/daily_goal_progress.dto';
 // 1. 습관 생성 api (습관 생성)
 // 2. 습관 시작 api (명세와 동일)
@@ -45,7 +39,7 @@ export class UsersHabitsService {
       where: { user: { userId: userId }, mainGoal },
       relations: ['user'],
     });
-    if (habitCheck && habitCheck.isExpired === false) {
+    if (habitCheck && habitCheck.isFinished === false) {
       throw new Error('Same Goal is working on it');
     }
 
@@ -208,7 +202,40 @@ export class UsersHabitsService {
   //
   async endHabit(habitDto: HabitDto) {
     const { userId, habitId } = habitDto;
-    console.log(userId, habitId);
+    const habit = await this.usersHabitsRepository.findOne({
+      where: { habitId, user: { userId: userId } },
+      relations: ['dailyGoals'],
+    });
+    const today = new Date();
+
+    const mainGoalDayToMilliSeconds = habit.goalDays * 24 * 60 * 60 * 1000;
+    const routineFirstDay = habit.dailyGoals[0].createdAt;
+    const habitFinDay = new Date(
+      routineFirstDay.getTime() + mainGoalDayToMilliSeconds,
+    );
+    const FinDay = new Date(habitFinDay.toISOString());
+    if (today >= FinDay) {
+      const goalDays = habit.goalDays;
+      const successCnt = habit.successCnt;
+      const successPercentage = Math.round((successCnt / goalDays) * 100);
+      if (successPercentage >= 80) {
+        await this.usersHabitsRepository.update(habitId, {
+          isFinished: true,
+          isComplete: true,
+        });
+        // 성공시 추가 포인트 지급
+      } else {
+        await this.usersHabitsRepository.update(habitId, {
+          isFinished: true,
+          isFailed: true,
+        });
+      }
+      return {
+        msg: `users habit finished successfully ::: success percentage :: ${successPercentage}`,
+      };
+    } else {
+      throw new Error(`Can't end this habit:: End date is ${FinDay}`);
+    }
     // 메인 goal 종료하는 api이다.
     // stopHabit에서도 호출이 된다.
     // 일반적으로도 호출이 되어야 한다.
@@ -224,6 +251,22 @@ export class UsersHabitsService {
     // 암튼 stopHabit에서 users_habits last_work, success_cnt, totalWorkedTime, continous는 update 해준 상태임.
     // 총 성공 수행일이 목표일의 2/3이상이라면 is_finished 처리, 그렇지 않다면 is_expired 처리
     // is_finished라면 추가보상.
+    return { msg: `Can't end this habit:: End date is ${FinDay}` };
   }
-  async getHabit() {}
+  async getAllHabitInfo(habitDto: HabitDto) {
+    const { userId } = habitDto;
+    const habit = await this.usersHabitsRepository.findOne({
+      where: { user: { userId: userId } },
+      relations: ['dailyGoals'],
+    });
+    return habit;
+  }
+  async getHabitInfo(habitDto: HabitDto) {
+    const { userId, habitId } = habitDto;
+    const allHabit = await this.usersHabitsRepository.findOne({
+      where: { habitId, user: { userId: userId } },
+      relations: ['dailyGoals'],
+    });
+    return allHabit;
+  }
 }
