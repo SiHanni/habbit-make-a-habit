@@ -121,7 +121,7 @@ export class UsersHabitsService {
     // business logic
     // 1. 유저와 습관 검증
     const { userId, habitId, dailyGoalId } = dailyProgressDto;
-
+    // TODO: where 조건이 많아진다면 bracket을 써볼 것
     const checkHabit = await this.dailyGoalRepository
       .createQueryBuilder('daily_goal_progress')
       .leftJoinAndSelect('daily_goal_progress.usersHabits', 'users_habits')

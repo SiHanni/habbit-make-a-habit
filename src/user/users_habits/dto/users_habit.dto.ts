@@ -9,7 +9,6 @@ export class UsersHabitDto {
   dailyGoalTime: number;
   isFinished: boolean;
 }
-
 export class HabitDto {
   @IsNumber()
   userId: number;
