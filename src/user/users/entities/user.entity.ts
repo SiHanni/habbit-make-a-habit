@@ -9,7 +9,7 @@ import { UsersInterest } from 'src/user/users_interests/entities/users_interest.
 import { UsersHabit } from 'src/user/users_habits/entities/users_habit.entity';
 import { UsersPoint } from 'src/user/users_points/entities/users_point.entity';
 
-@Entity('users') //데이터베이스에서 매핑되는 테이블 명
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn({ name: 'id' })
   userId: number;

@@ -5,16 +5,16 @@ import {
   UnauthorizedException,
   ConflictException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto, LogInDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository, In } from 'typeorm';
-import { User } from './entities/user.entity';
-import { UsersInterest } from '../users_interests/entities/users_interest.entity';
-import { Interest } from 'src/interests/entities/interest.entity';
-import { generateJwtToken } from 'src/common/utils/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import isImageUrl from 'image-url-validator';
 import * as bcrypt from 'bcrypt';
+import { generateJwtToken } from 'src/common/utils/jwt';
+import { CreateUserDto, LogInDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { Interest } from 'src/interests/entities/interest.entity';
+import { UsersInterest } from '../users_interests/entities/users_interest.entity';
 
 @Injectable()
 export class UsersService {
