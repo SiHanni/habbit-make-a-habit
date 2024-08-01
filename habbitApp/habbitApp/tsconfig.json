@@ -3,11 +3,10 @@
   "compilerOptions": {
     "strict": true, // 엄격한 타입 검사를 활성화합니다.
     "esModuleInterop": true, // CommonJS 모듈과의 호환성을 제공합니다.
-    "skipLibCheck": true // 라이브러리 파일의 타입 검사를 건너뜁니다.
+    "skipLibCheck": true, // 라이브러리 파일의 타입 검사를 건너뜁니다.
+    "jsx": "react"
   },
-  "include": [
-    "src" // 소스 폴더를 포함합니다.
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules", // 노드 모듈을 제외합니다.
     "babel.config.js",
