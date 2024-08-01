@@ -15,8 +15,16 @@ const AuthNavigator: React.FC = () => {
         component={MainScreen}
         options={{headerShown: false}} // 네비게이션 바 숨기기
       />
-      <AuthStack.Screen name="Login" component={LoginScreen} />
-      <AuthStack.Screen name="Register" component={RegisterScreen} />
+      <AuthStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <AuthStack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{headerShown: false}}
+      />
     </AuthStack.Navigator>
   );
 };
