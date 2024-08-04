@@ -12,9 +12,15 @@ type LoginScreenNavigationProp = StackNavigationProp<
 
 type Props = {
   navigation: LoginScreenNavigationProp;
+  setIsLoggedIn: (value: boolean | null) => void;
+  setUsername: (value: string | null) => void;
 };
 
-const LoginScreen: React.FC<Props> = ({navigation}) => {
+const LoginScreen: React.FC<Props> = ({
+  navigation,
+  setIsLoggedIn,
+  setUsername,
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,11 +31,8 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       const {userId, username} = result;
       await AsyncStorage.setItem('user', JSON.stringify({userId, username})); // 로그인 정보 저장
       if (result.msg === 'Login successful') {
-        // 로그인 성공 시 메인 화면으로 이동
-        navigation.navigate('Main', {
-          //userId: result.userId,
-          username: result.username,
-        });
+        setUsername(result.username);
+        setIsLoggedIn(true);
       } else {
         setError('Login failed. Please check your credentials.');
       }
