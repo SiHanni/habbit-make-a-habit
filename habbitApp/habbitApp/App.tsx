@@ -5,8 +5,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from './src/screens/Auth/LoginScreen';
 import RegisterScreen from './src/screens/Auth/RegisterScreen';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
+import SettingsScreen from './src/screens/SettingsScreen'; // 경로 유지
+import UserSettingsScreen from './src/screens/UserSettingsScreen'; // 경로 유지
 import {RootStackParamList} from './src/navigation/RootStackParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {TimerProvider} from './src/context/TimerContext';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -38,38 +41,54 @@ const App: React.FC = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {!isLoggedIn ? (
-          <>
-            <Stack.Screen name="Login" options={{headerShown: false}}>
-              {props => (
-                <LoginScreen
-                  {...props}
-                  setIsLoggedIn={setIsLoggedIn}
-                  setUsername={setUsername}
-                />
-              )}
-            </Stack.Screen>
-            <Stack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={{headerShown: false}}
-            />
-          </>
-        ) : (
-          <Stack.Screen name="Main" options={{headerShown: false}}>
-            {() => (
-              <BottomTabNavigator
-                username={username}
-                setIsLoggedIn={setIsLoggedIn}
-                setUsername={setUsername}
+    <TimerProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {!isLoggedIn ? (
+            <>
+              <Stack.Screen name="Login" options={{headerShown: false}}>
+                {props => (
+                  <LoginScreen
+                    {...props}
+                    setIsLoggedIn={setIsLoggedIn}
+                    setUsername={setUsername}
+                  />
+                )}
+              </Stack.Screen>
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={{headerShown: false}}
               />
-            )}
-          </Stack.Screen>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Main" options={{headerShown: false}}>
+                {() => (
+                  <BottomTabNavigator
+                    username={username}
+                    setIsLoggedIn={setIsLoggedIn}
+                    setUsername={setUsername}
+                  />
+                )}
+              </Stack.Screen>
+              <Stack.Screen name="Settings">
+                {() => (
+                  <SettingsScreen
+                    setIsLoggedIn={setIsLoggedIn}
+                    setUsername={setUsername}
+                  />
+                )}
+              </Stack.Screen>
+              <Stack.Screen
+                name="UserSettings"
+                component={UserSettingsScreen}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </TimerProvider>
   );
 };
 

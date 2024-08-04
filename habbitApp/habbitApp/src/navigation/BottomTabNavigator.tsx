@@ -1,11 +1,11 @@
 // src/navigation/BottomTabNavigator.tsx
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PomodoroScreen from '../screens/BottomTabBar/Pomodoro';
 import HabitScreen from '../screens/BottomTabBar/CreateHabit';
 import PointsScreen from '../screens/BottomTabBar/Point';
 import MainScreen from '../screens/MainScreen';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,8 +28,9 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
 }) => {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       screenOptions={{
-        headerShown: false, // 각 탭의 기본 헤더를 숨김
+        headerShown: false,
       }}>
       <Tab.Screen
         name="Pomodoro"

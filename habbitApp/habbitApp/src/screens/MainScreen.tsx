@@ -1,9 +1,8 @@
 // src/screens/MainScreen.tsx
 import React, {useEffect, useState} from 'react';
-import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {checkLoginStatus} from '../../App';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 
 type Props = {
   username: string | null;
@@ -13,10 +12,11 @@ type Props = {
 
 const MainScreen: React.FC<Props> = ({
   username,
-  setIsLoggedIn,
-  setUsername,
+  //setIsLoggedIn,
+  //setUsername,
 }) => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,12 +41,7 @@ const MainScreen: React.FC<Props> = ({
   };
 
   const openSettings = () => {
-    console.log('Settings button pressed');
-  };
-
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem('user');
-    checkLoginStatus(setIsLoggedIn, setUsername); // 상태 업데이트를 위해 인수 전달
+    navigation.navigate('Settings');
   };
 
   return (
@@ -61,7 +56,6 @@ const MainScreen: React.FC<Props> = ({
         </TouchableOpacity>
       </View>
       <Text style={styles.title}>Welcome, {username}</Text>
-      <Button title="Log out" onPress={handleLogout} />
     </View>
   );
 };

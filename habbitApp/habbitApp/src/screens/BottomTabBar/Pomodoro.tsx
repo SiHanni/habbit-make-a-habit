@@ -1,12 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import BackButtonHeader from '../../components/BackButtonHeader';
+import {View, StyleSheet} from 'react-native';
+import PomodoroTimer from '../../components/PomodoroTimer';
 
 const PomodoroScreen: React.FC = () => {
   return (
     <View style={styles.container}>
-      <BackButtonHeader />
-      <Text>Pomodoro Timer Screen</Text>
+      <PomodoroTimer />
     </View>
   );
 };
