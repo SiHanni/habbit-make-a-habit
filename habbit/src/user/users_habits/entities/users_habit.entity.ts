@@ -45,13 +45,13 @@ export class UsersHabit {
   @Column({ name: 'goal_days' }) // 일 단위, 최소 7일 이상
   goalDays: number;
 
-  @Column({ name: 'success_cnt' })
+  @Column({ name: 'success_cnt', default: 0 })
   successCnt: number;
 
-  @Column({ name: 'total_worked_time' })
+  @Column({ name: 'total_worked_time', default: 0 })
   totalWorkedTime: number;
 
-  @Column({ name: 'continuous_cnt' })
+  @Column({ name: 'continuous_cnt', default: 0 })
   continuousCnt: number;
 
   @Column({ name: 'is_finished', default: false })

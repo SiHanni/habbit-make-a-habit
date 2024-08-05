@@ -32,7 +32,7 @@ export class UsersHabitsService {
 
     // 1. userID 체크 // 추후에는 로그인되어진 상태인지도 받아서 체크해야함.
     const checkUser = await this.usersRepository.findOne({
-      where: { userId },
+      where: { userId: userId },
     });
     if (!checkUser) {
       throw new NotFoundException('User not found');
@@ -46,7 +46,10 @@ export class UsersHabitsService {
       throw new Error('Same Goal is working on it');
     }
 
-    const newHabit = this.usersHabitsRepository.create(createUsersHabitDto);
+    const newHabit = this.usersHabitsRepository.create({
+      user: checkUser,
+      ...createUsersHabitDto,
+    });
     return {
       usersHabit: await this.usersHabitsRepository.save(newHabit),
       msg: 'success generate new habit',

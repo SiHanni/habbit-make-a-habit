@@ -84,6 +84,7 @@ export class UsersService {
       where: { email, isMember: true },
     });
     if (!userCheck) {
+      console.log('Invalid email');
       throw new UnauthorizedException('Invalid email');
     }
     const passwordCheck = await bcrypt.compare(password, userCheck.password);

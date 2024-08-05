@@ -2,7 +2,7 @@ import { IsString, IsNumber } from 'class-validator';
 
 export class UsersHabitDto {
   habitId: number;
-  userId: number;
+  user: number;
   createdAt: Date;
   mainGoal: string;
   dailyGoal: string;
