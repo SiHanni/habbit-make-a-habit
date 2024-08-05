@@ -1,9 +1,8 @@
-// src/navigation/BottomTabNavigator.tsx
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PomodoroScreen from '../screens/BottomTabBar/Pomodoro';
-import HabitScreen from '../screens/BottomTabBar/CreateHabit';
+import HabitScreen from '../screens/BottomTabBar/GenerateHabit';
 import PointsScreen from '../screens/BottomTabBar/Point';
 import MainScreen from '../screens/MainScreen';
 
@@ -55,9 +54,10 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       <Tab.Screen
         name="Habit"
         component={HabitScreen}
-        options={{
+        options={({route}) => ({
           tabBarIcon: getTabBarIcon('plus-circle'),
-        }}
+          tabBarStyle: route.name === 'Habit' ? {display: 'none'} : undefined,
+        })}
       />
       <Tab.Screen
         name="Points"

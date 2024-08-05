@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
 
 const BackButtonHeader: React.FC = () => {
@@ -8,8 +8,8 @@ const BackButtonHeader: React.FC = () => {
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
+      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <MaterialCommunityIcons name="chevron-left" size={40} color="#66CDAA" />
       </TouchableOpacity>
     </View>
   );
@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 1,
+    paddingVertical: 20,
   },
 });
 

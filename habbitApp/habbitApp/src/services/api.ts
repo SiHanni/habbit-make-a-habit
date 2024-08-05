@@ -1,22 +1,8 @@
 import Config from 'react-native-config';
 import axios from 'axios';
+import {GenerateHabit} from './paramsType';
 
 const API_BASE_URL = Config.API_BASE_URL;
-
-export const getHabitInfo = async (userId: number): Promise<any> => {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/users-habits/getAllHabitInfo`,
-      {
-        params: {userId}, // 쿼리 파라미터로 userId 전송
-      },
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching habit info:', error);
-    throw error;
-  }
-};
 
 export const login = async (email: string, password: string) => {
   try {
@@ -50,6 +36,35 @@ export const signUp = async (createUserDto: {
     return response.data;
   } catch (error) {
     console.error('Failed to sign up', error);
+    throw error;
+  }
+};
+
+export const getHabitInfo = async (userId: number): Promise<any> => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/users-habits/getAllHabitInfo`,
+      {
+        params: {userId}, // 쿼리 파라미터로 userId 전송
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching habit info:', error);
+    throw error;
+  }
+};
+
+export const generateHabit = async (generateHabitParams: GenerateHabit) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/users-habits/generateHabit`,
+      generateHabitParams,
+    );
+    console.log(':rerere', response);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to create habit', error);
     throw error;
   }
 };

@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Main: {username: string};
   Settings: undefined;
   UserSettings: undefined;
+  Habit: undefined;
 };
 
 // 네비게이션의 화면과 해당 화면에서 필요한 파라미터를 정의하는 타입
