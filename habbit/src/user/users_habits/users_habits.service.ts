@@ -283,17 +283,17 @@ export class UsersHabitsService {
   }
   async getAllHabitInfo(habitDto: HabitDto) {
     const { userId } = habitDto;
-    const habit = await this.usersHabitsRepository.findOne({
+    const habit = await this.usersHabitsRepository.find({
       where: { user: { userId: userId } },
-      relations: ['dailyGoals'],
+      relations: ['dailyGoals', 'user'],
     });
     return habit;
   }
   async getHabitInfo(habitDto: HabitDto) {
     const { userId, habitId } = habitDto;
-    const allHabit = await this.usersHabitsRepository.findOne({
+    const allHabit = await this.usersHabitsRepository.find({
       where: { habitId, user: { userId: userId } },
-      relations: ['dailyGoals'],
+      relations: ['dailyGoals', 'user'],
     });
     return allHabit;
   }

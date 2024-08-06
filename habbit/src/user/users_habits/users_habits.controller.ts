@@ -5,6 +5,7 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UsersHabitsService } from './users_habits.service';
 import { CreateUsersHabitDto } from './dto/create-users_habit.dto';
@@ -66,7 +67,7 @@ export class UsersHabitsController {
   }
 
   @Get('getAllHabitInfo')
-  async getAllHabitInfo(@Body() habitDto: HabitDto) {
+  async getAllHabitInfo(@Query() habitDto: HabitDto) {
     try {
       const getAllHabitInfo =
         await this.usersHabitsService.getAllHabitInfo(habitDto);
@@ -76,7 +77,7 @@ export class UsersHabitsController {
     }
   }
   @Get('getHabitInfo')
-  async getHabitInfo(@Body() habitDto: HabitDto) {
+  async getHabitInfo(@Query() habitDto: HabitDto) {
     try {
       const getHabitInfo = await this.usersHabitsService.getHabitInfo(habitDto);
       return getHabitInfo;
