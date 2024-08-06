@@ -20,11 +20,7 @@ type BottomTabNavigatorProps = {
   setUsername: (value: string | null) => void;
 };
 
-const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
-  username,
-  setIsLoggedIn,
-  setUsername,
-}) => {
+const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({username}) => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -40,13 +36,7 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       />
       <Tab.Screen
         name="Home"
-        children={() => (
-          <MainScreen
-            username={username}
-            setIsLoggedIn={setIsLoggedIn}
-            setUsername={setUsername}
-          />
-        )}
+        children={() => <MainScreen username={username} />}
         options={{
           tabBarIcon: getTabBarIcon('home'),
         }}

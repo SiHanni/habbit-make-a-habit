@@ -40,17 +40,33 @@ export const signUp = async (createUserDto: {
   }
 };
 
-export const getHabitInfo = async (userId: number): Promise<any> => {
+export const getAllHabitInfo = async (userId: number) => {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/users-habits/getAllHabitInfo`,
       {
-        params: {userId}, // 쿼리 파라미터로 userId 전송
+        params: {userId},
+      },
+    );
+    console.log('QWEQWEQWEQWE:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching habit info:', error);
+    throw error;
+  }
+};
+
+export const getHabitInfo = async (userId: number, habitId: number) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/users-habits/getHabitInfo`,
+      {
+        params: {userId, habitId},
       },
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching habit info:', error);
+    console.error('Failed to get habit info', error);
     throw error;
   }
 };
