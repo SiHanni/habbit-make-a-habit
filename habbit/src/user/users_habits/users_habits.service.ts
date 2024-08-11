@@ -291,7 +291,7 @@ export class UsersHabitsService {
   }
   async getHabitInfo(habitDto: HabitDto) {
     const { userId, habitId } = habitDto;
-    const allHabit = await this.usersHabitsRepository.find({
+    const allHabit = await this.usersHabitsRepository.findOne({
       where: { habitId, user: { userId: userId } },
       relations: ['dailyGoals', 'user'],
     });
