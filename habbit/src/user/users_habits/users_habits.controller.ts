@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Body,
   HttpException,
   HttpStatus,
@@ -81,6 +82,15 @@ export class UsersHabitsController {
     try {
       const getHabitInfo = await this.usersHabitsService.getHabitInfo(habitDto);
       return getHabitInfo;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  @Delete('removeHabit')
+  async removeHabit(@Body() habitDto: HabitDto) {
+    try {
+      await this.usersHabitsService.removeHabit(habitDto);
+      return { message: 'Habit deleted successfully' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

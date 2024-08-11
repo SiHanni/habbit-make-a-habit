@@ -297,4 +297,14 @@ export class UsersHabitsService {
     });
     return allHabit;
   }
+  async removeHabit(habitDto: HabitDto) {
+    const { userId, habitId } = habitDto;
+    const targetHabit = await this.usersHabitsRepository.findOne({
+      where: { habitId: habitId, user: { userId: userId } },
+      relations: ['dailyGoals', 'usersPoints'],
+    });
+    if (targetHabit) {
+      await this.usersHabitsRepository.remove(targetHabit);
+    }
+  }
 }
