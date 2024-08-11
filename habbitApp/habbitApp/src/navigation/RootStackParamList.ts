@@ -5,7 +5,7 @@ export type RootStackParamList = {
   Settings: undefined;
   UserSettings: undefined;
   Habit: undefined;
-  HabitDetail: {habitId: number};
+  HabitDetail: {habitId: number; userId: number};
 };
 
 // 네비게이션의 화면과 해당 화면에서 필요한 파라미터를 정의하는 타입

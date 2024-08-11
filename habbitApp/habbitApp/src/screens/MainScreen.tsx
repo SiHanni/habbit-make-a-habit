@@ -113,7 +113,7 @@ const MainScreen: React.FC<Props> = ({userId, username}) => {
   };
 
   const openHabitDetail = (habitId: number) => {
-    navigation.navigate('HabitDetail', {habitId});
+    navigation.navigate('HabitDetail', {habitId, userId});
   };
 
   const renderHabitItem = ({item}: {item: Habit}) => (
