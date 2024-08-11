@@ -1,3 +1,4 @@
+// src/navigation/BottomTabNavigator.tsx
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -8,19 +9,22 @@ import MainScreen from '../screens/MainScreen';
 
 const Tab = createBottomTabNavigator();
 
+// `BottomTabNavigatorProps` 정의
+interface BottomTabNavigatorProps {
+  userId: number;
+  username: string;
+}
+
 const getTabBarIcon = (iconName: string) => {
   return ({color, size}: {color: string; size: number}) => (
     <FontAwesome name={iconName} size={size} color={color} />
   );
 };
 
-type BottomTabNavigatorProps = {
-  username: string | null;
-  setIsLoggedIn: (value: boolean | null) => void;
-  setUsername: (value: string | null) => void;
-};
-
-const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({username}) => {
+const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
+  userId,
+  username,
+}) => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -36,7 +40,7 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({username}) => {
       />
       <Tab.Screen
         name="Home"
-        children={() => <MainScreen username={username} />}
+        children={() => <MainScreen userId={userId} username={username} />}
         options={{
           tabBarIcon: getTabBarIcon('home'),
         }}

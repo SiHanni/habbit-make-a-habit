@@ -84,3 +84,45 @@ export const generateHabit = async (generateHabitParams: GenerateHabit) => {
     throw error;
   }
 };
+
+export const startHabit = async (userId: number, habitId: number) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/users-habits/startHabit`,
+      {habitId, userId},
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to start habit:', error);
+    throw error;
+  }
+};
+
+// Stop a habit
+export const stopHabit = async (
+  userId: number,
+  habitId: number,
+  dailyGoalId: number,
+) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/users-habits/stopHabit`,
+      {userId, habitId, dailyGoalId},
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to stop habit:', error);
+    throw error;
+  }
+};
+
+export const deleteHabit = async (userId: number, habitId: number) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/users-habits/removeHabit`, {
+      data: {userId, habitId},
+    });
+  } catch (error) {
+    console.error('Failed to delete habit:', error);
+    throw error;
+  }
+};

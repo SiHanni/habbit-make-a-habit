@@ -1,94 +1,84 @@
 // src/App.tsx
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from './src/screens/Auth/LoginScreen';
 import RegisterScreen from './src/screens/Auth/RegisterScreen';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
-import SettingsScreen from './src/screens/SettingsScreen'; // 경로 유지
-import UserSettingsScreen from './src/screens/UserSettingsScreen'; // 경로 유지
+import SettingsScreen from './src/screens/SettingsScreen';
+import UserSettingsScreen from './src/screens/UserSettingsScreen';
+import HabitDetailScreen from './src/screens/Habit/HabitDetailScreen';
 import {RootStackParamList} from './src/navigation/RootStackParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {TimerProvider} from './src/context/TimerContext';
+import {AuthProvider, useAuth} from './src/context/AuthContext';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-export const checkLoginStatus = async (
-  setIsLoggedIn: (value: boolean | null) => void,
-  setUsername: (value: string | null) => void,
-) => {
-  const user = await AsyncStorage.getItem('user');
-  if (user) {
-    const parsedUser = JSON.parse(user);
-    setUsername(parsedUser.username);
-    setIsLoggedIn(true);
-  } else {
-    setIsLoggedIn(false);
-  }
-};
-
-const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+const AppContent: React.FC = () => {
+  const {setIsLoggedIn, setUserInfo, isLoggedIn, userInfo} = useAuth();
 
   useEffect(() => {
-    checkLoginStatus(setIsLoggedIn, setUsername);
-  }, []);
+    const checkLoginStatus = async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserInfo({userId: parsedUser.userId, username: parsedUser.username});
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLoginStatus();
+  }, [setIsLoggedIn, setUserInfo]);
 
   if (isLoggedIn === null) {
-    // 로딩 상태, 로딩 스피너 등을 표시할 수 있습니다.
-    return null;
+    return null; // 로딩 상태, 로딩 스피너 등을 표시할 수 있습니다.
   }
 
   return (
-    <TimerProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {!isLoggedIn ? (
-            <>
-              <Stack.Screen name="Login" options={{headerShown: false}}>
-                {props => (
-                  <LoginScreen
-                    {...props}
-                    setIsLoggedIn={setIsLoggedIn}
-                    setUsername={setUsername}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen
-                name="Register"
-                component={RegisterScreen}
-                options={{headerShown: false}}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="Main" options={{headerShown: false}}>
-                {() => (
-                  <BottomTabNavigator
-                    username={username}
-                    setIsLoggedIn={setIsLoggedIn}
-                    setUsername={setUsername}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen name="Settings">
-                {() => (
-                  <SettingsScreen
-                    setIsLoggedIn={setIsLoggedIn}
-                    setUsername={setUsername}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen
-                name="UserSettings"
-                component={UserSettingsScreen}
-              />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </TimerProvider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen name="Login" options={{headerShown: false}}>
+              {props => <LoginScreen {...props} />}
+            </Stack.Screen>
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{headerShown: false}}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Main" options={{headerShown: false}}>
+              {props => (
+                <BottomTabNavigator
+                  userId={userInfo?.userId ?? 0}
+                  username={userInfo?.username ?? 'Guest'}
+                  {...props}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="UserSettings" component={UserSettingsScreen} />
+            <Stack.Screen name="HabitDetail" component={HabitDetailScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <TimerProvider>
+        <AppContent />
+      </TimerProvider>
+    </AuthProvider>
   );
 };
 

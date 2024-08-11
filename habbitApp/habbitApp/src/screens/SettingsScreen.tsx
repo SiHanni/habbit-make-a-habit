@@ -1,21 +1,22 @@
-// src/screens/SettingsScreen.tsx
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {checkLoginStatus} from '../../App'; // 경로 유지
+import {useAuth} from '../context/AuthContext'; // 경로 수정
 
-type Props = {
-  setIsLoggedIn: (value: boolean | null) => void;
-  setUsername: (value: string | null) => void;
-};
-
-const SettingsScreen: React.FC<Props> = ({setIsLoggedIn, setUsername}) => {
+const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const {setIsLoggedIn, setUserInfo} = useAuth();
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('user');
-    checkLoginStatus(setIsLoggedIn, setUsername);
+    try {
+      await AsyncStorage.removeItem('user');
+      setIsLoggedIn(false);
+      setUserInfo(null);
+      navigation.navigate('Login'); // 로그인 화면으로 네비게이션
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
   };
 
   const goToUserSettings = () => {

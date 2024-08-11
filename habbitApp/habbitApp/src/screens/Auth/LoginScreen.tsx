@@ -3,41 +3,36 @@ import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../navigation/RootStackParamList';
 import {login} from '../../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트 로그인 유지
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAuth} from '../../context/AuthContext';
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   'Login'
 >;
 
-type Props = {
-  navigation: LoginScreenNavigationProp;
-  setIsLoggedIn: (value: boolean | null) => void;
-  setUsername: (value: string | null) => void;
-};
-
-const LoginScreen: React.FC<Props> = ({
+const LoginScreen: React.FC<{navigation: LoginScreenNavigationProp}> = ({
   navigation,
-  setIsLoggedIn,
-  setUsername,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const {setIsLoggedIn, setUserInfo} = useAuth();
 
   const handleLogin = async () => {
     try {
       const result = await login(email, password);
-      const {userId, username} = result;
-      await AsyncStorage.setItem('user', JSON.stringify({userId, username})); // 로그인 정보 저장
-      if (result.msg === 'Login successful') {
-        setUsername(result.username);
+      const {userId, username, msg} = result;
+      if (msg === 'Login successful') {
+        await AsyncStorage.setItem('user', JSON.stringify({userId, username}));
+        setUserInfo({username, userId});
         setIsLoggedIn(true);
+        navigation.navigate('Main', {userId, username}); // Main으로 네비게이션 시 파라미터 전달
       } else {
         setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };

@@ -6,7 +6,8 @@ const PointsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* <BackButtonHeader /> */}
-      <Text>Points Screen</Text>
+      <Text>point page will open soon</Text>
+      <Text>La page des points va bientôt s'ouvrir</Text>
     </View>
   );
 };
