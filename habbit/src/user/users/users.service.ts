@@ -75,7 +75,7 @@ export class UsersService {
     return savedUser;
   }
 
-  async SignIn(
+  async signIn(
     signInDto: SignInDto,
   ): Promise<{ userId: number; msg: string; username: string }> {
     const { email, password } = signInDto;

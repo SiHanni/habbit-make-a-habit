@@ -38,8 +38,8 @@ export class UsersController {
 
   @Post('signIn')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async signin(@Body() signDto: SignInDto) {
-    return await this.usersService.signIn(signinDto);
+  async signIn(@Body() signInDto: SignInDto) {
+    return await this.usersService.signIn(signInDto);
   }
 
   @Get(':id')
