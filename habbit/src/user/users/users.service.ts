@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import isImageUrl from 'image-url-validator';
 import * as bcrypt from 'bcrypt';
 import { generateJwtToken } from 'src/common/utils/jwt';
-import { CreateUserDto, LogInDto } from './dto/create-user.dto';
+import { CreateUserDto, SignInDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
@@ -75,10 +75,10 @@ export class UsersService {
     return savedUser;
   }
 
-  async logIn(
-    loginDto: LogInDto,
+  async SignIn(
+    signInDto: SignInDto,
   ): Promise<{ userId: number; msg: string; username: string }> {
-    const { email, password } = loginDto;
+    const { email, password } = signInDto;
 
     const userCheck = await this.userRepository.findOne({
       where: { email, isMember: true },
@@ -94,7 +94,7 @@ export class UsersService {
 
     return {
       userId: userCheck.userId,
-      msg: 'Login successful',
+      msg: 'SignIn successful',
       username: userCheck.username,
     };
   }

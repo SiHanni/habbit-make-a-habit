@@ -13,7 +13,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LogInDto } from './dto/create-user.dto';
+import { CreateUserDto, SignInDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -36,10 +36,10 @@ export class UsersController {
     }
   }
 
-  @Post('logIn')
+  @Post('signIn')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async login(@Body() loginDto: LogInDto) {
-    return await this.usersService.logIn(loginDto);
+  async signin(@Body() signDto: SignInDto) {
+    return await this.usersService.signIn(signinDto);
   }
 
   @Get(':id')
