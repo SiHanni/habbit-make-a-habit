@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../../",
+    "outDir": "../../dist/libs/kafka",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src/**/*", "index.ts"]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@libs/kafka",
+  "version": "1.0.0",
+  "main": "dist/libs/kafka",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
